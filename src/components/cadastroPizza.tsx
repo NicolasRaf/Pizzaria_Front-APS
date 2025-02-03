@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import axios from 'axios';
 
 interface Pizza {
   id: number;
@@ -15,20 +14,6 @@ const CadastroPizza: React.FC = () => {
   const [tamanho, setTamanho] = useState('Média');
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
 
-  useEffect(() => {
-    // Buscar pizzas cadastradas na API ao carregar o componente
-    const fetchPizzas = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/pizzas`);
-        setPizzas(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar pizzas:', error);
-      }
-    };
-
-    fetchPizzas();
-  }, []);
-
   const sabores = [
     { nome: 'Calabresa', preco: 25.00 },
     { nome: 'Mussarela', preco: 22.00 },
@@ -37,11 +22,13 @@ const CadastroPizza: React.FC = () => {
     { nome: 'Marguerita', preco: 27.00 }
   ];
 
-  const handleCadastro = async (event: React.FormEvent) => {
+  const handleCadastro = (event: React.FormEvent) => {
     event.preventDefault();
     const saborSelecionado = sabores.find(s => s.nome === sabor);
+
     if (saborSelecionado) {
       const index = pizzas.findIndex(p => p.sabor === saborSelecionado.nome && p.tamanho === tamanho);
+
       if (index !== -1) {
         // Se a pizza já existe, aumenta a quantidade
         const novasPizzas = [...pizzas];
@@ -56,33 +43,24 @@ const CadastroPizza: React.FC = () => {
           preco: saborSelecionado.preco,
           quantidade: 1
         };
-        try {
-          const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/pizzas`, novaPizza);
-          setPizzas([...pizzas, response.data]);
-          alert('Pizza cadastrada com sucesso!');
-        } catch (error) {
-          console.error('Erro ao cadastrar pizza:', error);
-        }
+        setPizzas([...pizzas, novaPizza]);
       }
+
+      alert('Pizza cadastrada com sucesso!');
       setSabor('');
       setTamanho('Média');
     }
   };
 
-  const handleRemover = async (id: number) => {
-    try {
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL
-}/pizzas/${id}`);
-      setPizzas(pizzas.filter(pizza => pizza.id !== id));
-    } catch (error) {
-      console.error('Erro ao remover pizza:', error);
-    }
+  const handleRemover = (id: number) => {
+    setPizzas(pizzas.filter(pizza => pizza.id !== id));
   };
 
   return (
     <div>
       <form onSubmit={handleCadastro}>
         <h2>Cadastro de Pizza</h2>
+
         <label>
           Sabor da Pizza:
           <select value={sabor} onChange={(e) => setSabor(e.target.value)} required>
@@ -94,6 +72,7 @@ const CadastroPizza: React.FC = () => {
             ))}
           </select>
         </label>
+
         <label>
           Tamanho da Pizza:
           <select value={tamanho} onChange={(e) => setTamanho(e.target.value)}>
@@ -102,10 +81,12 @@ const CadastroPizza: React.FC = () => {
             <option value="Gigante">Gigante</option>
           </select>
         </label>
+
         <button type="submit">Cadastrar</button>
       </form>
 
       <h3>Pizzas Cadastradas</h3>
+
       <table className="pizza-tabela">
         <thead>
           <tr>
@@ -123,7 +104,9 @@ const CadastroPizza: React.FC = () => {
               <td>{pizza.sabor}</td>
               <td>{pizza.tamanho}</td>
               <td>R$ {pizza.preco.toFixed(2)}</td>
-              <td><FaTimes className="remover" onClick={() => handleRemover(pizza.id)} /></td>
+              <td>
+                <FaTimes className="remover" onClick={() => handleRemover(pizza.id)} />
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,118 +1,49 @@
 import React, { useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-interface Pizza {
-  id: number;
-  sabor: string;
-  tamanho: string;
-  preco: number;
-  quantidade: number;
-}
+const Login: React.FC = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-const CadastroPizza: React.FC = () => {
-  const [sabor, setSabor] = useState('');
-  const [tamanho, setTamanho] = useState('Média');
-  const [pizzas, setPizzas] = useState<Pizza[]>([]);
-
-  const sabores = [
-    { nome: 'Calabresa', preco: 25.00 },
-    { nome: 'Mussarela', preco: 22.00 },
-    { nome: 'Portuguesa', preco: 28.00 },
-    { nome: 'Frango com Catupiry', preco: 30.00 },
-    { nome: 'Marguerita', preco: 27.00 }
-  ];
-
-  const handleCadastro = (event: React.FormEvent) => {
+  const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
-    const saborSelecionado = sabores.find(s => s.nome === sabor);
 
-    if (saborSelecionado) {
-      const index = pizzas.findIndex(p => p.sabor === saborSelecionado.nome && p.tamanho === tamanho);
-
-      if (index !== -1) {
-        // Se a pizza já existe, aumenta a quantidade
-        const novasPizzas = [...pizzas];
-        novasPizzas[index].quantidade += 1;
-        setPizzas(novasPizzas);
-      } else {
-        // Se a pizza não existe, adiciona uma nova pizza
-        const novaPizza: Pizza = {
-          id: new Date().getTime(),
-          sabor: saborSelecionado.nome,
-          tamanho,
-          preco: saborSelecionado.preco,
-          quantidade: 1
-        };
-        setPizzas([...pizzas, novaPizza]);
-      }
-
-      alert('Pizza cadastrada com sucesso!');
-      setSabor('');
-      setTamanho('Média');
+    // Simulando sucesso no login
+    if (username === 'admin' && password === 'admin') {
+      navigate('/cadastro-pizza');
+    } else {
+      alert('Usuário ou senha inválidos');
     }
   };
 
-  const handleRemover = (id: number) => {
-    setPizzas(pizzas.filter(pizza => pizza.id !== id));
-  };
-
   return (
-    <div>
-      <form onSubmit={handleCadastro}>
-        <h2>Cadastro de Pizza</h2>
+    <form onSubmit={handleLogin}>
+      <h2>Login</h2>
 
-        <label>
-          Sabor da Pizza:
-          <select value={sabor} onChange={(e) => setSabor(e.target.value)} required>
-            <option value="">Selecione um sabor</option>
-            {sabores.map((sabor) => (
-              <option key={sabor.nome} value={sabor.nome}>
-                {sabor.nome} (R$ {sabor.preco.toFixed(2)})
-              </option>
-            ))}
-          </select>
-        </label>
+      <label>
+        Usuário:
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+      </label>
 
-        <label>
-          Tamanho da Pizza:
-          <select value={tamanho} onChange={(e) => setTamanho(e.target.value)}>
-            <option value="Média">Média</option>
-            <option value="Grande">Grande</option>
-            <option value="Gigante">Gigante</option>
-          </select>
-        </label>
+      <label>
+        Senha:
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+      </label>
 
-        <button type="submit">Cadastrar</button>
-      </form>
-
-      <h3>Pizzas Cadastradas</h3>
-
-      <table className="pizza-tabela">
-        <thead>
-          <tr>
-            <th>Quantidade</th>
-            <th>Sabor</th>
-            <th>Tamanho</th>
-            <th>Preço</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {pizzas.map((pizza) => (
-            <tr key={pizza.id} className="pizza-item">
-              <td>{pizza.quantidade}</td>
-              <td>{pizza.sabor}</td>
-              <td>{pizza.tamanho}</td>
-              <td>R$ {pizza.preco.toFixed(2)}</td>
-              <td>
-                <FaTimes className="remover" onClick={() => handleRemover(pizza.id)} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+      <button type="submit">Entrar</button>
+    </form>
   );
 };
 
-export default CadastroPizza;
+export default Login;
