@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: pizzaria-front
+    env: node
+    plan: free
+    buildCommand: 'npm install && npm run build'
+    startCommand: 'npm run start'
+    routes:
+      - source: /(*)
+        destination: /index.html
