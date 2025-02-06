@@ -21,28 +21,28 @@ const Login: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <h2>{process.env.REACT_APP_API_URL}</h2>
-      <label>
-        Usuário:
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Senha:
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </label>
-      <button type="submit">Entrar</button>
-    </form>
+      <form onSubmit={handleLogin}>
+    <h2>{process.env.REACT_APP_API_URL || "API URL não definida"}</h2> {/* Caso a variável esteja indefinida */}
+    <label>
+      Usuário:
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        required
+      />
+    </label>
+    <label>
+      Senha:
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+    </label>
+    <button type="submit">Entrar</button>
+  </form>
   );
 };
 
