@@ -19,7 +19,7 @@ const CadastroPizza: React.FC = () => {
     // Buscar pizzas cadastradas na API ao carregar o componente
     const fetchPizzas = async () => {
       try {
-        const response = await axios.get(`${process.env.APP_API_URL}/pizzas`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/pizzas`);
         setPizzas(response.data);
       } catch (error) {
         console.error('Erro ao buscar pizzas:', error);
@@ -57,7 +57,7 @@ const CadastroPizza: React.FC = () => {
           quantidade: 1
         };
         try {
-          const response = await axios.post(`${process.env.APP_API_URL}/pizzas`, novaPizza);
+          const response = await axios.post(`${process.env.REACT_APP_API_URL}/pizzas`, novaPizza);
           setPizzas([...pizzas, response.data]);
           alert('Pizza cadastrada com sucesso!');
         } catch (error) {
@@ -71,7 +71,7 @@ const CadastroPizza: React.FC = () => {
 
   const handleRemover = async (id: number) => {
     try {
-      await axios.delete(`${process.env.APP_API_URL}/pizzas/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/pizzas/${id}`);
       setPizzas(pizzas.filter(pizza => pizza.id !== id));
     } catch (error) {
       console.error('Erro ao remover pizza:', error);

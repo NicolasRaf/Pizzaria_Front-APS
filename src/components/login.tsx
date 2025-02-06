@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${process.env.APP_API_URL}/login`, { username, password });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, { username, password });
       if (response.status === 200) {
         navigate('/cadastro-pizza');
       }
