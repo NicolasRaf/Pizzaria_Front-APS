@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 
   return (
     <form onSubmit={handleLogin}>
-      <h2>Login</h2>
+      <h2>process.env.REACT_APP_API_URL</h2>
       <label>
         Usuário:
         <input
