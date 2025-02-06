@@ -6,13 +6,13 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  alert(process.env.REACT_APP_API_URL);
+  alert(process.env.VITE_API_URL);
 
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, { username, password });
+      const response = await axios.post(`${process.env.VITE_API_URL}/login`, { username, password });
       if (response.status === 200) {
         navigate('/cadastro-pizza');
       }
