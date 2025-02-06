@@ -6,8 +6,6 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  alert(import.meta.env.VITE_API_URL);
-
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
