@@ -6,7 +6,7 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  console.log('API URL:', process.env.REACT_APP_API_URL);
+  alert(process.env.REACT_APP_API_URL);
 
 
   const handleLogin = async (event: React.FormEvent) => {
