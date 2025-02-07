@@ -24,7 +24,7 @@ interface CustomerOrderRequestDTO {
 const CadastroPizza: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [sabor, setSabor] = useState('');
-  const [tamanho, setTamanho] = useState('MEDIUM');
+  const [tamanho, setTamanho] = useState('');
 
   useEffect(() => {
     // Buscar pizzas na API
@@ -32,11 +32,8 @@ const CadastroPizza: React.FC = () => {
       try {
         const response = await axios.get<ApiPizza[]>(`${process.env.REACT_APP_API_URL}/pizzas`);
         const pizzasData: Pizza[] = response.data.map((pizza) => ({
-          id: pizza.id,
-          flavor: pizza.flavor,
-          size: pizza.size,
-          price: pizza.price,
-          quantidade: 1
+          ...pizza,
+          quantidade: 1, // Inicializando a quantidade como 1
         }));
         setPizzas(pizzasData);
       } catch (error) {
@@ -50,13 +47,14 @@ const CadastroPizza: React.FC = () => {
   const handleCadastro = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const index = pizzas.findIndex(p => p.flavor === sabor && p.size === tamanho);
-    if (index !== -1) {
+    const pizzaSelecionada = pizzas.find(p => p.flavor === sabor && p.size === tamanho);
+    if (pizzaSelecionada) {
       const novasPizzas = [...pizzas];
+      const index = novasPizzas.findIndex(p => p.id === pizzaSelecionada.id);
       novasPizzas[index].quantidade += 1;
       setPizzas(novasPizzas);
 
-      // Atualizar a quantidade na API
+      // Criar uma nova ordem na API
       const orderData: CustomerOrderRequestDTO = {
         pizzas: novasPizzas.map(pizza => ({
           id: pizza.id,
@@ -66,9 +64,9 @@ const CadastroPizza: React.FC = () => {
 
       try {
         await axios.post(`${process.env.REACT_APP_API_URL}/orders/create`, orderData);
-        alert('Pedido criado com sucesso!');
+        alert('Pizza cadastrada com sucesso!');
       } catch (error) {
-        console.error('Erro ao criar pedido:', error);
+        console.error('Erro ao cadastrar pedido:', error);
       }
     } else {
       alert('Pizza não encontrada');
@@ -101,7 +99,8 @@ const CadastroPizza: React.FC = () => {
         </label>
         <label>
           Tamanho da Pizza:
-          <select value={tamanho} onChange={(e) => setTamanho(e.target.value)}>
+          <select value={tamanho} onChange={(e) => setTamanho(e.target.value)} required>
+            <option value="">Selecione um tamanho</option>
             <option value="MEDIUM">Média</option>
             <option value="LARGE">Grande</option>
             <option value="EXTRA_LARGE">Gigante</option>
