@@ -22,13 +22,14 @@ const CadastroPizza: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [sabor, setSabor] = useState('');
   const [tamanho, setTamanho] = useState('MEDIUM');
-  const [sabores, setSabores] = useState<string[]>([
+
+  const sabores = [
     'Calabresa',
     'Mussarela',
     'Portuguesa',
     'Frango com Catupiry',
     'Marguerita'
-  ]);
+  ];
 
   useEffect(() => {
     // Buscar pizzas na API
