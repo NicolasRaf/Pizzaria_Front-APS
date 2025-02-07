@@ -6,7 +6,7 @@ export default defineConfig({
   base: './', // ou '/' se estiver hospedando em um domínio root
   server: {
     host: true, // Permite acesso na rede local
-    port: 8080 // ou outra porta desejada
+    port: 5173 // ou outra porta desejada
   },
   preview: {
     allowedHosts: ["localhost", "pizzaria-front-teste.onrender.com"]

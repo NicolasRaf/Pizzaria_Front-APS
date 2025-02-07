@@ -28,21 +28,33 @@ const CadastroPizza: React.FC = () => {
   const [tamanho, setTamanho] = useState('');
 
   useEffect(() => {
+    // Verificar se a variável de ambiente está definida
+    if (!import.meta.env.VITE_API_URL) {
+      alert('Erro: a variável de ambiente VITE_API_URL não está definida');
+      return;
+    }
+
     // Buscar pizzas na API
     const fetchPizzas = async () => {
       try {
-        const response = await axios.get<ApiPizza[]>(`${process.env.REACT_APP_API_URL}/pizzas`);
+        const response = await axios.get<ApiPizza[]>(`${import.meta.env.VITE_API_URL}/pizzas`);
+        alert(`Resposta da API: ${JSON.stringify(response.data)}`);
         const pizzasData: Pizza[] = response.data.map((pizza) => ({
-          ...pizza,
+          id: pizza.id,
+          flavor: pizza.flavor,
+          size: pizza.size,
+          price: pizza.price,
           quantidade: 1, // Inicializando a quantidade como 1
         }));
+        alert(JSON.stringify(pizzasData));
         setPizzas(pizzasData);
 
         // Obter lista de sabores únicos
         const uniqueFlavors = [...new Set(response.data.map(pizza => pizza.flavor))];
+        alert(`Sabores únicos: ${uniqueFlavors}`);
         setSabores(uniqueFlavors);
       } catch (error) {
-        console.error('Erro ao buscar pizzas:', error);
+        alert(`Erro ao buscar pizzas na API: ${error}`);
       }
     };
 
@@ -68,7 +80,7 @@ const CadastroPizza: React.FC = () => {
       };
 
       try {
-        await axios.post(`${process.env.REACT_APP_API_URL}/orders/create`, orderData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/orders/create`, orderData);
         alert('Pizza cadastrada com sucesso!');
       } catch (error) {
         console.error('Erro ao cadastrar pedido:', error);
@@ -80,7 +92,7 @@ const CadastroPizza: React.FC = () => {
 
   const handleRemover = async (id: number) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/orders/${id}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/orders/${id}`);
       setPizzas(pizzas.filter(pizza => pizza.id !== id));
     } catch (error) {
       console.error('Erro ao remover pedido:', error);
