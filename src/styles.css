@@ -152,17 +152,17 @@ p {
 
 /* Estilização da tabela de pedidos */
 .pedido-tabela {
-  width: 90%; /* Ajustando a largura para centralizar melhor */
+  width: 90%;
   max-width: 800px;
   margin: 20px auto;
   border-collapse: separate;
-  border-spacing: 0 10px; /* Espaçamento entre as linhas */
+  border-spacing: 0 10px;
 }
 
 .pedido-tabela th,
 .pedido-tabela td {
   padding: 10px;
-  text-align: center; /* Centraliza o texto */
+  text-align: center;
   border-bottom: 1px solid #ddd;
 }
 
@@ -180,6 +180,18 @@ p {
   position: relative;
 }
 
+/* Estilização da nova coluna de Preço */
+.pedido-tabela th.preco-header,
+.pedido-item td.preco {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.pedido-item td.preco {
+  color: #27ae60;
+  font-size: 16px;
+}
+
 .pedido-item td .remover {
   cursor: pointer;
   color: #f44336;
@@ -189,6 +201,7 @@ p {
 .pedido-item td .remover:hover {
   color: #d32f2f;
 }
+
 
 /* Estilização do botão de cadastrar pedido */
 .cadastrar-pedido {
