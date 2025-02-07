@@ -32,8 +32,11 @@ const CadastroPizza: React.FC = () => {
       try {
         const response = await axios.get<ApiPizza[]>(`${process.env.REACT_APP_API_URL}/pizzas`);
         const pizzasData: Pizza[] = response.data.map((pizza) => ({
-          ...pizza,
-          quantidade: 1, // Inicializando a quantidade como 1
+          id: pizza.id,
+          flavor: pizza.flavor,
+          size: pizza.size,
+          price: pizza.price,
+          quantidade: 1
         }));
         setPizzas(pizzasData);
       } catch (error) {
@@ -63,9 +66,9 @@ const CadastroPizza: React.FC = () => {
 
       try {
         await axios.post(`${process.env.REACT_APP_API_URL}/orders/create`, orderData);
-        alert('Pizza cadastrada com sucesso!');
+        alert('Pedido criado com sucesso!');
       } catch (error) {
-        console.error('Erro ao cadastrar pedido:', error);
+        console.error('Erro ao criar pedido:', error);
       }
     } else {
       alert('Pizza não encontrada');
