@@ -20,7 +20,7 @@ const Login: React.FC = () => {
 
   return (
     <form onSubmit={handleLogin}>
-      <h2>Login</h2>
+      <h2>Atendente Login</h2>
       <label>
         Usuário:
         <input

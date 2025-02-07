@@ -7,7 +7,13 @@ interface Pizza {
   flavor: string;
   size: string;
   price: number;
-  quantidade: number;
+}
+
+interface Pedido {
+  pizzaId: number;
+  flavor: string;
+  size: string;
+  quantity: number;
 }
 
 interface ApiPizza {
@@ -18,14 +24,16 @@ interface ApiPizza {
 }
 
 interface CustomerOrderRequestDTO {
-  pizzas: { id: number; quantidade: number }[];
+  customerId: number;
+  orders: { pizzaId: number; quantity: number }[];
 }
 
-const CadastroPizza: React.FC = () => {
+const CadastroPedido: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [sabores, setSabores] = useState<string[]>([]);
   const [sabor, setSabor] = useState('');
   const [tamanho, setTamanho] = useState('');
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
 
   useEffect(() => {
     // Verificar se a variável de ambiente está definida
@@ -38,20 +46,16 @@ const CadastroPizza: React.FC = () => {
     const fetchPizzas = async () => {
       try {
         const response = await axios.get<ApiPizza[]>(`${import.meta.env.VITE_API_URL}/pizzas`);
-        alert(`Resposta da API: ${JSON.stringify(response.data)}`);
         const pizzasData: Pizza[] = response.data.map((pizza) => ({
           id: pizza.id,
           flavor: pizza.flavor,
           size: pizza.size,
           price: pizza.price,
-          quantidade: 1, // Inicializando a quantidade como 1
         }));
-        alert(JSON.stringify(pizzasData));
         setPizzas(pizzasData);
 
         // Obter lista de sabores únicos
         const uniqueFlavors = [...new Set(response.data.map(pizza => pizza.flavor))];
-        alert(`Sabores únicos: ${uniqueFlavors}`);
         setSabores(uniqueFlavors);
       } catch (error) {
         alert(`Erro ao buscar pizzas na API: ${error}`);
@@ -61,48 +65,66 @@ const CadastroPizza: React.FC = () => {
     fetchPizzas();
   }, []);
 
-  const handleCadastro = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  const adicionarPedido = () => {
     const pizzaSelecionada = pizzas.find(p => p.flavor === sabor && p.size === tamanho);
     if (pizzaSelecionada) {
-      const novasPizzas = [...pizzas];
-      const index = novasPizzas.findIndex(p => p.id === pizzaSelecionada.id);
-      novasPizzas[index].quantidade += 1;
-      setPizzas(novasPizzas);
-
-      // Criar uma nova ordem na API
-      const orderData: CustomerOrderRequestDTO = {
-        pizzas: novasPizzas.map(pizza => ({
-          id: pizza.id,
-          quantidade: pizza.quantidade
-        }))
-      };
-
-      try {
-        await axios.post(`${import.meta.env.VITE_API_URL}/orders/create`, orderData);
-        alert('Pizza cadastrada com sucesso!');
-      } catch (error) {
-        console.error('Erro ao cadastrar pedido:', error);
+      const pedidoExistente = pedidos.find(p => p.pizzaId === pizzaSelecionada.id);
+      if (pedidoExistente) {
+        // Se o pedido já existe, aumenta a quantidade
+        const novosPedidos = pedidos.map(pedido =>
+          pedido.pizzaId === pizzaSelecionada.id
+            ? { ...pedido, quantity: pedido.quantity + 1 }
+            : pedido
+        );
+        setPedidos(novosPedidos);
+      } else {
+        // Se o pedido não existe, adiciona um novo pedido
+        const novoPedido: Pedido = {
+          pizzaId: pizzaSelecionada.id,
+          flavor: pizzaSelecionada.flavor,
+          size: pizzaSelecionada.size,
+          quantity: 1,
+        };
+        setPedidos([...pedidos, novoPedido]);
       }
+
+      setSabor('');
+      setTamanho('');
     } else {
       alert('Pizza não encontrada');
     }
   };
 
-  const handleRemover = async (id: number) => {
+  const cadastrarPedido = async () => {
+    const orderData: CustomerOrderRequestDTO = {
+      customerId: 2,
+      orders: pedidos.map(pedido => ({
+        pizzaId: pedido.pizzaId,
+        quantity: pedido.quantity,
+      })),
+    };
+
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/orders/${id}`);
-      setPizzas(pizzas.filter(pizza => pizza.id !== id));
+      await axios.post(`${import.meta.env.VITE_API_URL}/orders/create`, orderData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      alert('Pedido cadastrado com sucesso!');
+      setPedidos([]); // Limpar pedidos após o cadastro
     } catch (error) {
-      console.error('Erro ao remover pedido:', error);
+      alert(`Erro ao cadastrar pedido: ${error}`);
     }
   };
 
+  const removerPedido = (pizzaId: number) => {
+    setPedidos(pedidos.filter(pedido => pedido.pizzaId !== pizzaId));
+  };
+
   return (
-    <div>
-      <form onSubmit={handleCadastro}>
-        <h2>Cadastro de Pizza</h2>
+    <div className="pedido-container">
+      <h2>Realizar Pedido</h2>
+      <form>
         <label>
           Sabor da Pizza:
           <select value={sabor} onChange={(e) => setSabor(e.target.value)} required>
@@ -123,36 +145,34 @@ const CadastroPizza: React.FC = () => {
             <option value="EXTRA_LARGE">Gigante</option>
           </select>
         </label>
-        <button type="submit">Cadastrar</button>
+        <button type="button" onClick={adicionarPedido}>Adicionar Pedido</button>
       </form>
 
-      <h3>Pizzas Cadastradas</h3>
-      <table className="pizza-tabela">
+      <h3>Pedidos Realizados</h3>
+      <table className="pedido-tabela">
         <thead>
           <tr>
-            <th>Quantidade</th>
             <th>Sabor</th>
             <th>Tamanho</th>
-            <th>Preço</th>
+            <th>Quantidade</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          {pizzas.map((pizza) => (
-            <tr key={pizza.id} className="pizza-item">
-              <td>{pizza.quantidade}</td>
-              <td>{pizza.flavor}</td>
-              <td>
-                {pizza.size === 'MEDIUM' ? 'Média' : pizza.size === 'LARGE' ? 'Grande' : 'Gigante'}
-              </td>
-              <td>R$ {pizza.price.toFixed(2)}</td>
-              <td><FaTimes className="remover" onClick={() => handleRemover(pizza.id)} /></td>
+          {pedidos.map((pedido) => (
+            <tr key={pedido.pizzaId} className="pedido-item">
+              <td>{pedido.flavor}</td>
+              <td>{pedido.size === 'MEDIUM' ? 'Média' : pedido.size === 'LARGE' ? 'Grande' : 'Gigante'}</td>
+              <td>{pedido.quantity}</td>
+              <td><FaTimes className="remover" onClick={() => removerPedido(pedido.pizzaId)} /></td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <button className="cadastrar-pedido" onClick={cadastrarPedido}>Cadastrar Pedido</button>
     </div>
   );
 };
 
-export default CadastroPizza;
+export default CadastroPedido;
