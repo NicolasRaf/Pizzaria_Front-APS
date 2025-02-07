@@ -1,11 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: './', // ou '/' se estiver hospedando em um domínio root
+  server: {
+    host: true, // Permite acesso na rede local
+    port: 8080 // ou outra porta desejada
+  },
   preview: {
-    allowedHosts: ["pizzaria-front-teste.onrender.com"]
+    allowedHosts: ["localhost", "pizzaria-front-teste.onrender.com"]
   }
 });

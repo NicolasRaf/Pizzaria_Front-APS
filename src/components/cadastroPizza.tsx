@@ -23,6 +23,7 @@ interface CustomerOrderRequestDTO {
 
 const CadastroPizza: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
+  const [sabores, setSabores] = useState<string[]>([]);
   const [sabor, setSabor] = useState('');
   const [tamanho, setTamanho] = useState('');
 
@@ -36,6 +37,10 @@ const CadastroPizza: React.FC = () => {
           quantidade: 1, // Inicializando a quantidade como 1
         }));
         setPizzas(pizzasData);
+
+        // Obter lista de sabores únicos
+        const uniqueFlavors = [...new Set(response.data.map(pizza => pizza.flavor))];
+        setSabores(uniqueFlavors);
       } catch (error) {
         console.error('Erro ao buscar pizzas:', error);
       }
@@ -90,9 +95,9 @@ const CadastroPizza: React.FC = () => {
           Sabor da Pizza:
           <select value={sabor} onChange={(e) => setSabor(e.target.value)} required>
             <option value="">Selecione um sabor</option>
-            {pizzas.map((pizza) => (
-              <option key={pizza.id} value={pizza.flavor}>
-                {pizza.flavor}
+            {sabores.map((flavor) => (
+              <option key={flavor} value={flavor}>
+                {flavor}
               </option>
             ))}
           </select>
