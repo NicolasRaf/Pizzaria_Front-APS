@@ -10,7 +10,6 @@ interface Pizza {
   quantidade: number;
 }
 
-// Tipo específico para os dados retornados pela API
 interface ApiPizza {
   id: number;
   flavor: string;
@@ -18,18 +17,14 @@ interface ApiPizza {
   price: number;
 }
 
+interface CustomerOrderRequestDTO {
+  pizzas: { id: number; quantidade: number }[];
+}
+
 const CadastroPizza: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [sabor, setSabor] = useState('');
   const [tamanho, setTamanho] = useState('MEDIUM');
-
-  const sabores = [
-    'Calabresa',
-    'Mussarela',
-    'Portuguesa',
-    'Frango com Catupiry',
-    'Marguerita'
-  ];
 
   useEffect(() => {
     // Buscar pizzas na API
@@ -57,33 +52,32 @@ const CadastroPizza: React.FC = () => {
       const novasPizzas = [...pizzas];
       novasPizzas[index].quantidade += 1;
       setPizzas(novasPizzas);
-    } else {
-      const novaPizza: Pizza = {
-        id: new Date().getTime(),
-        flavor: sabor,
-        size: tamanho,
-        price: tamanho === 'MEDIUM' ? 40 : tamanho === 'LARGE' ? 60 : 80,
-        quantidade: 1,
+
+      // Atualizar a quantidade na API
+      const orderData: CustomerOrderRequestDTO = {
+        pizzas: novasPizzas.map(pizza => ({
+          id: pizza.id,
+          quantidade: pizza.quantidade
+        }))
       };
 
       try {
-        const response = await axios.post<Pizza>(`${process.env.REACT_APP_API_URL}/pizzas`, novaPizza);
-        setPizzas([...pizzas, response.data]);
+        await axios.post(`${process.env.REACT_APP_API_URL}/orders/create`, orderData);
         alert('Pizza cadastrada com sucesso!');
       } catch (error) {
-        console.error('Erro ao cadastrar pizza:', error);
+        console.error('Erro ao cadastrar pedido:', error);
       }
+    } else {
+      alert('Pizza não encontrada');
     }
-    setSabor('');
-    setTamanho('MEDIUM');
   };
 
   const handleRemover = async (id: number) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/pizzas/${id}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/orders/${id}`);
       setPizzas(pizzas.filter(pizza => pizza.id !== id));
     } catch (error) {
-      console.error('Erro ao remover pizza:', error);
+      console.error('Erro ao remover pedido:', error);
     }
   };
 
@@ -95,9 +89,9 @@ const CadastroPizza: React.FC = () => {
           Sabor da Pizza:
           <select value={sabor} onChange={(e) => setSabor(e.target.value)} required>
             <option value="">Selecione um sabor</option>
-            {sabores.map((sabor) => (
-              <option key={sabor} value={sabor}>
-                {sabor}
+            {pizzas.map((pizza) => (
+              <option key={pizza.id} value={pizza.flavor}>
+                {pizza.flavor}
               </option>
             ))}
           </select>
