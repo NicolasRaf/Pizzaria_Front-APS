@@ -22,6 +22,13 @@ const CadastroPizza: React.FC = () => {
   const [pizzas, setPizzas] = useState<Pizza[]>([]);
   const [sabor, setSabor] = useState('');
   const [tamanho, setTamanho] = useState('MEDIUM');
+  const [sabores, setSabores] = useState<string[]>([
+    'Calabresa',
+    'Mussarela',
+    'Portuguesa',
+    'Frango com Catupiry',
+    'Marguerita'
+  ]);
 
   useEffect(() => {
     // Buscar pizzas na API
@@ -85,12 +92,14 @@ const CadastroPizza: React.FC = () => {
         <h2>Cadastro de Pizza</h2>
         <label>
           Sabor da Pizza:
-          <input 
-            type="text" 
-            value={sabor} 
-            onChange={(e) => setSabor(e.target.value)} 
-            required 
-          />
+          <select value={sabor} onChange={(e) => setSabor(e.target.value)} required>
+            <option value="">Selecione um sabor</option>
+            {sabores.map((sabor) => (
+              <option key={sabor} value={sabor}>
+                {sabor}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
           Tamanho da Pizza:
