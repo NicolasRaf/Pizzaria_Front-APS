@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 interface Pizza {
   id: number;
@@ -34,6 +35,9 @@ const CadastroPedido: React.FC = () => {
   const [sabor, setSabor] = useState('');
   const [tamanho, setTamanho] = useState('');
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const location = useLocation(); 
+  const queryParams = new URLSearchParams(location.search);
+  const customerId = queryParams.get('customerId');
 
   useEffect(() => {
     // Verificar se a variável de ambiente está definida
@@ -97,7 +101,7 @@ const CadastroPedido: React.FC = () => {
 
   const cadastrarPedido = async () => {
     const orderData: CustomerOrderRequestDTO = {
-      customerId: 2,
+      customerId: Number(customerId),
       orders: pedidos.map(pedido => ({
         pizzaId: pedido.pizzaId,
         quantity: pedido.quantity,

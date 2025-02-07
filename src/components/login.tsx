@@ -11,7 +11,7 @@ const Login: React.FC = () => {
     event.preventDefault();
     
     if (username === 'xama' || username === 'nicolas' && password === 'admin') {
-      navigate('/cadastro-pizza');
+      navigate('/cadastro-cliente');
     } else {
       alert('Usuário ou senha incorretos.');
     }
