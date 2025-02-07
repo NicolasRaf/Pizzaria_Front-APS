@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+//import axios from 'axios';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -9,15 +9,13 @@ const Login: React.FC = () => {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { username, password });
-      if (response.status === 200) {
-        navigate('/cadastro-pizza');
-      }
-    } catch (error) {
-      alert('Usuário ou senha inválidos');
-      console.error('Login falhou:', error);
+    
+    if (username === 'xama' || username === 'nicolas' && password === 'admin') {
+      navigate('/cadastro-pizza');
+    } else {
+      alert('Usuário ou senha incorretos.');
     }
+
   };
 
   return (
